@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Movie Data Visualization</title>
+  <title>Discover the Best Movies in Your Favorite Genre</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,7 +31,7 @@
   </style>
 </head>
 <body>
-
+<h1>Let's Find the Best Movies in Your Area of Interest!</h1>
 <div class="filter-container">
   <label for="ratingSelect">Select Rating:</label>
   <select id="ratingSelect"></select>
@@ -41,6 +41,18 @@
 
   <label for="countrySelect">Select Country:</label>
   <select id="countrySelect"></select>
+</div>
+
+<div class="filter-container">
+  <label for="yearRangeMin">Select Min Year:</label>
+  <input type="range" id="yearRangeMin" min="1986" max="2016" value="1986">
+  <span id="selectedYearMin">1986</span>
+</div>
+
+<div class="filter-container">
+  <label for="yearRangeMax">Select Max Year:</label>
+  <input type="range" id="yearRangeMax" min="1986" max="2016" value="2016">
+  <span id="selectedYearMax">2016</span>
 </div>
 
 <table id="movieTable">
@@ -84,17 +96,28 @@
     d3.select("#ratingSelect").on("change", updateTable);
     d3.select("#genreSelect").on("change", updateTable);
     d3.select("#countrySelect").on("change", updateTable);
+    d3.select("#yearRangeMin").on("input", function() {
+      d3.select("#selectedYearMin").text(this.value);
+      updateTable();
+    });
+    d3.select("#yearRangeMax").on("input", function() {
+      d3.select("#selectedYearMax").text(this.value);
+      updateTable();
+    });
 
     // Function to update the table based on the filtered data
     function updateTable() {
       var selectedRating = d3.select("#ratingSelect").node().value;
       var selectedGenre = d3.select("#genreSelect").node().value;
       var selectedCountry = d3.select("#countrySelect").node().value;
+      var selectedYearMin = +d3.select("#yearRangeMin").node().value;
+      var selectedYearMax = +d3.select("#yearRangeMax").node().value;
 
       var filteredData = data.filter(d =>
         (selectedRating === "All" || d.rating === selectedRating) &&
         (selectedGenre === "All" || d.genre === selectedGenre) &&
-        (selectedCountry === "All" || d.country === selectedCountry)
+        (selectedCountry === "All" || d.country === selectedCountry) &&
+        (d.year >= selectedYearMin && d.year <= selectedYearMax)
       );
 
       var table = d3.select("#movieTable");
